@@ -1,0 +1,9 @@
+{
+    "token" : "Bot Token from Discord",
+    "clientId": "Your application ID",
+    "dMessage": 100,
+    "dImage": 40,
+    "downloadLocation": "downloads",
+    "midjourneyOnly" : true,
+    "midjourneyID": "936929561302675456"
+}

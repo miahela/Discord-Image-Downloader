@@ -1,0 +1,16 @@
+# Ignore dependencies and node modules
+node_modules/
+
+# Ignore downloaded files
+downloads/
+
+# Ignore development environment files
+.vscode/
+
+# Ignore build artifacts
+imagebot-linux
+imagebot-macos
+imagebot-win.exe
+
+# Ignore config files that contain sensitive information
+config.json
