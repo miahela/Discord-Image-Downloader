@@ -1,4 +1,4 @@
-# ImageBot
+# Discord-Image-Downloader
 
 ImageBot is a Discord bot that allows you to download and save the last upscaled images posted in a channel by the Midjourney bot. You can specify the number of images to download and the number of messages to read.
 
@@ -42,7 +42,15 @@ ImageBot is a Discord bot that allows you to download and save the last upscaled
 
 ## Usage
 
-Invite the bot to your Discord server and grant it the necessary permissions.
+To use the ImageBot, invite the bot to your Discord server and grant it the necessary permissions.
+
+By default, the bot is configured to only download upscaled images posted by the Midjourney bot. If you want to download any images (not just Midjourney's images), you can make the required changes to the config.json file.
+
+Also, in the extract.js file, remove the following line:
+```
+if (UPSCALED_PATTERN.test(element.content))
+```
+
 
 ## Configuration
 
@@ -64,12 +72,13 @@ The configuration file `config.json` should contain the following fields:
 - `clientId`: Your application ID.
 - `dMessage`: (Optional) Default number of messages to read. Default: 100.
 - `dImage`: (Optional) Default number of images to download. Default: 40.
-- `downloadLocation`: (Optional)
 - `downloadLocation`: (Optional) The folder where downloaded images will be saved. Default: "downloads".
 - `midjourneyOnly`: (Optional) If set to `true`, the bot will only download images posted by the Midjourney bot. Default: true.
 - `midjourneyID`: (Optional) The user ID of the Midjourney bot. Replace the placeholder with the actual user ID.
 
 Make sure to replace the placeholders with your actual Discord bot token, application ID, and the Midjourney bot user ID if needed. Adjust the default values for `dMessage`, `dImage`, and `downloadLocation` if necessary.
+
+If you want to download images posted by any user or by a specific user (instead of just the Midjourney bot), you can set midjourneyOnly to false and replace midjourneyID with the user ID of the desired user.
 ``
 
 ## Commands
