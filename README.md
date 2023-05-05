@@ -94,7 +94,3 @@ Example:
 ```
 
 This command downloads the last 10 upscaled images from the last 50 messages in the channel.
-
-## License
-
-This project is licensed under the ISC License. See the [LICENSE](LICENSE) file for details.
