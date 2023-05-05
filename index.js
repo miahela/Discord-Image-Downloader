@@ -1,59 +1,77 @@
 /*jshint esversion: 11 */
+
+// Import required modules
 const fs = require('node:fs');
 const path = require('node:path');
-const { Client, Events, GatewayIntentBits, Collection } = require('discord.js');
+const {
+	Client,
+	Events,
+	GatewayIntentBits,
+	Collection,
+	REST,
+	Routes
+} = require('discord.js');
 const config = require('./config.json');
 
 
-const { REST, Routes } = require('discord.js');
-const { clientId, guildId, token } = require('./config.json');
+// Retrieve configuration values
+const {
+	clientId,
+	guildId,
+	token
+} = require('./config.json');
 
-
+// Initialize commands array
 const commands = [];
-// Grab all the command files from the commands directory you created earlier
+
+// Read command files from the 'commands' directory
 const files = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
-// Grab the SlashCommandBuilder#toJSON() output of each command's data for deployment
+// Load each command's data for deployment
 for (const file of files) {
 	const command = require(`./commands/extract.js`);
 	commands.push(command.data.toJSON());
 }
 
-// Construct and prepare an instance of the REST module
-const rest = new REST({ version: '10' }).setToken(token);
+// Set up REST module with token
+const rest = new REST({
+	version: '10'
+}).setToken(token);
 
-// and deploy your commands!
+// Deploy commands
 (async () => {
 	try {
 		console.log(`Started refreshing ${commands.length} application (/) commands.`);
 
 		// The put method is used to fully refresh all commands in the guild with the current set
 		const data = await rest.put(
-            Routes.applicationCommands(clientId),
-            { body: commands },
-        );
-        
+			Routes.applicationCommands(clientId), {
+				body: commands
+			},
+		);
+
 
 		console.log(`Successfully reloaded ${data.length} application (/) commands.`);
 	} catch (error) {
-		// And of course, make sure you catch and log any errors!
+
 		console.error(error);
 	}
 })();
 
-
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+// Initialize client and commands collection
+const client = new Client({
+	intents: [GatewayIntentBits.Guilds]
+});
 client.commands = new Collection();
 
-
-
+// Load command files
 const commandsPath = path.join(__dirname, 'commands');
 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
 
+// Add commands to the client's command collection
 for (const file of commandFiles) {
-	//const filePath = path.join(commandsPath, file);
 	const command = require('./commands/extract.js');
-	// Set a new item in the Collection with the key as the command name and the value as the exported module
+
 	if ('data' in command && 'execute' in command) {
 		client.commands.set(command.data.name, command);
 	} else {
@@ -61,9 +79,9 @@ for (const file of commandFiles) {
 	}
 }
 
-
+// Log in and handle events
 client.on('ready', () => {
-  console.log(`Logged in as ${client.user.tag}!`);
+	console.log(`Logged in as ${client.user.tag}!`);
 });
 
 client.login(config.token);
@@ -83,6 +101,9 @@ client.on(Events.InteractionCreate, async interaction => {
 		await command.execute(interaction);
 	} catch (error) {
 		console.error(error);
-		await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+		await interaction.reply({
+			content: 'There was an error while executing this command!',
+			ephemeral: true
+		});
 	}
 });
