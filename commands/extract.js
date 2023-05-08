@@ -88,7 +88,8 @@ module.exports = {
                                     // Download image to specified location
                                     download.image({
                                             url: link,
-                                            dest: path.join(process.cwd(), `/${DOWNLOAD_LOCATION}\\${image.name}`)
+                                            // dest: path.join(process.cwd(), `/${DOWNLOAD_LOCATION}\\${image.name}`) // Windows
+                                            dest: path.join(process.cwd(), DOWNLOAD_LOCATION, image.name) // Mac/Linux
                                         })
                                         .then(({
                                             filename
