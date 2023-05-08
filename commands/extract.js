@@ -85,11 +85,15 @@ module.exports = {
                                 if (currImages < numberOfImages) {
                                     let link = image.url;
 
+                                    const destPath = path.join(DOWNLOAD_LOCATION, image.name);
+                                    console.log("DOWNLOAD_LOCATION:", DOWNLOAD_LOCATION);
+                                    console.log("Destination path:", destPath);
+
                                     // Download image to specified location
                                     download.image({
                                             url: link,
                                             // dest: path.join(process.cwd(), `/${DOWNLOAD_LOCATION}\\${image.name}`) // Windows
-                                            dest: path.join(process.cwd(), DOWNLOAD_LOCATION, image.name) // Mac/Linux
+                                            dest: destPath // Mac/Linux
                                         })
                                         .then(({
                                             filename
