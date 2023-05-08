@@ -82,7 +82,7 @@ module.exports = {
                         // Check if the message content matches the upscaled pattern
                         if (UPSCALED_PATTERN.test(element.content)) {
                             element.attachments.forEach(image => {
-                                if (currImages <= numberOfImages) {
+                                if (currImages < numberOfImages) {
                                     let link = image.url;
 
                                     // Download image to specified location
