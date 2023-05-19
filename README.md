@@ -72,7 +72,7 @@ The configuration file `config.json` should contain the following fields:
 - `MIDJOURNEY_ONLY`: (Optional) If set to `true`, the bot will only download images posted by the Midjourney bot. Default: true.
 - `UPSCALED_ONLY`: (Optional) If set to `true`, the bot will only download upscaled images by Midjourney. Default: true.
 
-Make sure to replace the placeholders with your actual Discord bot token, application ID, download location. Adjust the default values for `dMessage`, `dImage`, and `downloadLocation` if necessary.
+Make sure to replace the placeholders with your actual Discord bot token, application ID, download location. Adjust the default values for `DEFAULT_READ_MESSAGES_LIMIT`, `DEFAULT_IMAGES_LIMIT`, `MIDJOURNEY_ONLY` and `UPSCALED_ONLY` if necessary.
 
 
 ## Commands
