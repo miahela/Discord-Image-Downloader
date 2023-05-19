@@ -1,34 +1,22 @@
 /*jshint esversion: 11 */
 // @ts-check
 
-// Import required modules and values from config
 const {
     SlashCommandBuilder,
-    EmbedBuilder,
     ChatInputCommandInteraction,
-    Message,
-    Collection
 } = require('discord.js');
 const download = require('image-downloader');
-const {
-    dMessage,
-    dImage,
-    downloadLocation,
-    midjourneyID,
-    midjourneyOnly
-} = require('../config.json');
-
 const path = require('path');
-const process = require('process');
-const fs = require('fs');
+const {
+    DEFAULT_READ_MESSAGES_LIMIT,
+    DEFAULT_IMAGES_LIMIT,
+    DOWNLOAD_LOCATION,
+    MIDJOURNEY_ID,
+    MIDJOURNEY_ONLY
+} = require('../config.json');
+const fetchMessages = require('../helpers/fetchMessages');
 
-// Define default values
-const DEFAULT_IMAGES = dImage;
-const DEFAULT_MESSAGES = dMessage;
-const DOWNLOAD_LOCATION = downloadLocation;
-const MIDJOURNEY_ID = midjourneyID;
-const ONLYMIDJOURNEY = midjourneyOnly;
-const UPSCALED_PATTERN = /Image\s+#\d+/;
+const UPSCALED_PATTERN = /Image\s+#\d+/; //This is the pattern thath Midjourney uses for upscaled images
 
 // Export command data and execute function
 module.exports = {
@@ -37,81 +25,74 @@ module.exports = {
         .setDescription('Downloads the last upscaled images in the channel this command is invoked from')
         .addIntegerOption(option => {
             return option.setName('images')
-                .setDescription('Number of images to download. Default: 40')
+                .setDescription(`Maximum number of images to download. Default: ${DEFAULT_IMAGES_LIMIT}`)
                 .setRequired(false)
-                .setMinValue(1);
+                .setMinValue(1)
         })
         .addIntegerOption(option => {
             return option.setName('messages')
-                .setDescription('Number of messages to read. Default: 100')
+                .setDescription(`Number of messages to read. Default: ${DEFAULT_READ_MESSAGES_LIMIT}`)
                 .setRequired(false)
                 .setMinValue(1)
-                .setMaxValue(100);
         }),
     /**
      * @param  {ChatInputCommandInteraction} interaction
      */
     async execute(interaction) {
-        // Create download directory if it doesn't exist
-        if (!fs.existsSync(path.join(process.cwd(), `./${DOWNLOAD_LOCATION}`))) {
-            fs.mkdirSync(path.join(process.cwd(), `./${DOWNLOAD_LOCATION}`));
-        }
+        try {
+            // Retrieve number of images and messages from passed as commands to the bot, or use defaults
+            const numberOfImages = interaction.options.getInteger('images') ?? DEFAULT_IMAGES_LIMIT;
+            const numberOfMessages = interaction.options.getInteger('messages') ?? DEFAULT_READ_MESSAGES_LIMIT;
+            let savedImages = 0;
 
-        // Retrieve number of images and messages from command options, or use defaults
-        let numberOfImages = interaction.options.getInteger('images') ?? DEFAULT_IMAGES;
-        let currImages = 0;
-        const numberOfMessages = interaction.options.getInteger('messages') ?? DEFAULT_MESSAGES;
+            await interaction.deferReply();
+            let messages = await fetchMessages(interaction.channel, numberOfMessages);
 
-        // Defer reply to ensure command does not time out
-        await interaction.deferReply();
+            console.log(`Received ${messages.size} messages`);
 
-        // Fetch messages in the channel and process them
-        interaction.channel?.messages.fetch({
-                limit: numberOfMessages,
-                cache: false
-            })
-            .then((messages) => {
+            let downloadPromises = []; // an array to hold all download promises
 
-                console.log(`Received ${messages.size} messages`);
+            messages.forEach(element => {
 
-                messages.forEach(element => {
-                    // Check if message author is valid and if it has any attachments
-                    if (((ONLYMIDJOURNEY && element.author.id === MIDJOURNEY_ID) || !midjourneyOnly) && element.attachments.size > 0) {
-                        console.log(element);
+                /* isCorrectAuthor first checks if you want to only download midjourney images, and then checks if the author is midjourney
+                If you don't want to limit it to Midjourney, set midjourneyOnly to false in config.json */
+                let isCorrectAuthor = !MIDJOURNEY_ONLY || (MIDJOURNEY_ONLY && element.author.id === MIDJOURNEY_ID);
+                let hasAttachments = element.attachments.size > 0;
+                let isUpscaledImage = UPSCALED_PATTERN.test(element.content); // This checks if the image is upscaled, if you want to download all images uncomment the line below
+                // isUpscaledImage = true;
 
-                        // Check if the message content matches the upscaled pattern
-                        if (UPSCALED_PATTERN.test(element.content)) {
-                            element.attachments.forEach(image => {
-                                if (currImages < numberOfImages) {
-                                    let link = image.url;
+                if (isCorrectAuthor && hasAttachments && isUpscaledImage) {
+                    element.attachments.forEach(image => {
+                        if (savedImages < numberOfImages) {
+                            let link = image.url;
+                            const imageDestination = path.join(DOWNLOAD_LOCATION, image.name);
 
-                                    const destPath = path.join(DOWNLOAD_LOCATION, image.name);
-                                    console.log("DOWNLOAD_LOCATION:", DOWNLOAD_LOCATION);
-                                    console.log("Destination path:", destPath);
-
-                                    // Download image to specified location
-                                    download.image({
-                                            url: link,
-                                            // dest: path.join(process.cwd(), `/${DOWNLOAD_LOCATION}\\${image.name}`) // Windows
-                                            dest: destPath // Mac/Linux
-                                        })
-                                        .then(({
-                                            filename
-                                        }) => {
-                                            console.log("Saved to ", filename);
-                                        }).catch(console.error);
-
-                                    currImages++;
-                                }
-                            });
+                            // push the download promise to the array
+                            downloadPromises.push(
+                                download.image({
+                                    url: link,
+                                    dest: imageDestination
+                                })
+                                .then(({
+                                    filename
+                                }) => {
+                                    console.log("Saved to ", filename);
+                                    savedImages++;
+                                })
+                                .catch(console.error)
+                            );
                         }
-                    }
-                });
-            })
-            .catch(console.error);
+                    });
+                }
+            });
 
-        // Reply to user indicating images have been saved
-        await interaction.editReply(`Images have been saved`);
+            // Wait for all download promises to finish
+            await Promise.all(downloadPromises);
+            // Reply to user indicating images have been saved
+            await interaction.editReply(`Saved ${savedImages} images to ${DOWNLOAD_LOCATION}`);
+
+        } catch (error) {
+            console.error("Error executing command", error);
+        }
     },
-
 };
