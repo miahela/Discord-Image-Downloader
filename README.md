@@ -74,7 +74,6 @@ The configuration file `config.json` should contain the following fields:
 
 Make sure to replace the placeholders with your actual Discord bot token, application ID, download location. Adjust the default values for `dMessage`, `dImage`, and `downloadLocation` if necessary.
 
-``
 
 ## Commands
 
