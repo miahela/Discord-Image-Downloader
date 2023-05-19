@@ -12,7 +12,8 @@ const {
     DEFAULT_IMAGES_LIMIT,
     DOWNLOAD_LOCATION,
     MIDJOURNEY_ID,
-    MIDJOURNEY_ONLY
+    MIDJOURNEY_ONLY,
+    UPSCALED_ONLY,
 } = require('../config.json');
 const fetchMessages = require('../helpers/fetchMessages');
 
@@ -58,8 +59,7 @@ module.exports = {
                 If you don't want to limit it to Midjourney, set midjourneyOnly to false in config.json */
                 let isCorrectAuthor = !MIDJOURNEY_ONLY || (MIDJOURNEY_ONLY && element.author.id === MIDJOURNEY_ID);
                 let hasAttachments = element.attachments.size > 0;
-                let isUpscaledImage = UPSCALED_PATTERN.test(element.content); // This checks if the image is upscaled, if you want to download all images uncomment the line below
-                // isUpscaledImage = true;
+                let isUpscaledImage = UPSCALED_PATTERN.test(element.content) || !UPSCALED_ONLY;
 
                 if (isCorrectAuthor && hasAttachments && isUpscaledImage) {
                     element.attachments.forEach(image => {

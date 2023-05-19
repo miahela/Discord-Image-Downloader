@@ -1,6 +1,6 @@
 # Discord-Image-Downloader
 
-ImageBot is a Discord bot that allows you to download and save the last upscaled images posted in a channel by the Midjourney bot. You can specify the number of images to download and the number of messages to read.
+Discord-Image-Downloader is a Discord bot that allows you to download and save the last upscaled images posted in a channel by the Midjourney bot. You can specify the number of images to download and the number of messages to read.
 
 ## Features
 
@@ -42,15 +42,9 @@ ImageBot is a Discord bot that allows you to download and save the last upscaled
 
 ## Usage
 
-To use the ImageBot, invite the bot to your Discord server and grant it the necessary permissions.
+To use the Discord-Image-Downloader, invite the bot to your Discord server and grant it the necessary permissions.
 
 By default, the bot is configured to only download upscaled images posted by the Midjourney bot. If you want to download any images (not just Midjourney's images), you can make the required changes to the config.json file.
-
-Also, in the extract.js file, remove the following line:
-```
-if (UPSCALED_PATTERN.test(element.content))
-```
-
 
 ## Configuration
 
@@ -58,27 +52,28 @@ The configuration file `config.json` should contain the following fields:
 
 ```json
 {
-  "token": "Bot Token from Discord",
-  "clientId": "Your application ID",
-  "dMessage": 100,
-  "dImage": 40,
-  "downloadLocation": "downloads",
-  "midjourneyOnly": true,
-  "midjourneyID": "936929561302675456"
+    "TOKEN": "Bot Token from Discord",
+    "CLIENT_ID": "Your application ID",
+    "DOWNLOAD_LOCATION": "Your download location",
+    "DEFAULT_READ_MESSAGES_LIMIT": 100,
+    "DEFAULT_IMAGES_LIMIT": 40,
+    "MIDJOURNEY_ID": "936929561302675456",
+    "MIDJOURNEY_ONLY": true,
+    "UPSCALED_ONLY": true
 }
 ```
 
-- `token`: Your Discord bot token.
-- `clientId`: Your application ID.
-- `dMessage`: (Optional) Default number of messages to read. Default: 100.
-- `dImage`: (Optional) Default number of images to download. Default: 40.
-- `downloadLocation`: (Optional) The folder where downloaded images will be saved. Default: "downloads".
-- `midjourneyOnly`: (Optional) If set to `true`, the bot will only download images posted by the Midjourney bot. Default: true.
-- `midjourneyID`: (Optional) The user ID of the Midjourney bot. Replace the placeholder with the actual user ID.
+- `TOKEN`: (REQUIRED) Your Discord bot token.
+- `CLIENT_ID`: (REQUIRED) Your application ID.
+- `DOWNLOAD_LOCATION`: (REQUIRED) Full path of the folder where downloaded images should be saved. Ex. `C:\\Users\\User\\Downloads\\` for Windows or `/Users/user/Downloads/` for Linux/Mac
+- `DEFAULT_READ_MESSAGES_LIMIT`: (Optional) Default number of messages to read. Default: 100.
+- `DEFAULT_IMAGES_LIMIT`: (Optional) Default number of images to download. Default: 40.
+- `MIDJOURNEY_ID`: (Optional) The user ID of the Midjourney bot. If you want to download only messages of some specific user (not Midjourney) replace the default id with the user ID of your targeted user.
+- `MIDJOURNEY_ONLY`: (Optional) If set to `true`, the bot will only download images posted by the Midjourney bot. Default: true.
+- `UPSCALED_ONLY`: (Optional) If set to `true`, the bot will only download upscaled images by Midjourney. Default: true.
 
-Make sure to replace the placeholders with your actual Discord bot token, application ID, and the Midjourney bot user ID if needed. Adjust the default values for `dMessage`, `dImage`, and `downloadLocation` if necessary.
+Make sure to replace the placeholders with your actual Discord bot token, application ID, download location. Adjust the default values for `dMessage`, `dImage`, and `downloadLocation` if necessary.
 
-If you want to download images posted by any user or by a specific user (instead of just the Midjourney bot), you can set midjourneyOnly to false and replace midjourneyID with the user ID of the desired user.
 ``
 
 ## Commands
@@ -94,7 +89,7 @@ Downloads the last upscaled images in the channel this command is invoked from.
 ```
 
 - `images`: (Optional) The number of images to download. Default: 40.
-- `messages`: (Optional) The number of messages to read. Default: 100. Must be between 1 and 100.
+- `messages`: (Optional) The number of messages to read. Default: 100.
 
 Example:
 

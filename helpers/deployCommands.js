@@ -6,8 +6,8 @@ const {
 	Routes
 } = require('discord.js');
 const {
-	clientId,
-	token
+	CLIENT_ID,
+	TOKEN
 } = require('../config.json');
 
 const commands = [];
@@ -22,14 +22,14 @@ for (const file of files) {
 
 const rest = new REST({
 	version: '10'
-}).setToken(token);
+}).setToken(TOKEN);
 
 // function to deploy commands
 const deployCommands = async () => {
 	try {
 		console.log(`Started refreshing ${commands.length} application (/) commands.`);
 		const data = await rest.put(
-			Routes.applicationCommands(clientId), {
+			Routes.applicationCommands(CLIENT_ID), {
 				body: commands
 			},
 		);

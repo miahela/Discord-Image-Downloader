@@ -1,9 +1,10 @@
 {
-    "token": "Bot Token from Discord",
-    "clientId": "Your application ID",
+    "TOKEN": "Bot Token from Discord",
+    "CLIENT_ID": "Your application ID",
     "DEFAULT_READ_MESSAGES_LIMIT": 100,
     "DEFAULT_IMAGES_LIMIT": 40,
     "DOWNLOAD_LOCATION": "Your download location; full path; ex. C:\\Users\\User\\Downloads\\ for Windows or /Users/user/Downloads/ for Linux/Mac",
+    "MIDJOURNEY_ID": "936929561302675456",
     "MIDJOURNEY_ONLY": true,
-    "MIDJOURNEY_ID": "936929561302675456"
+    "UPSCALED_ONLY": true
 }

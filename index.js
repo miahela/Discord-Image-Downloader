@@ -33,7 +33,7 @@ client.on('ready', () => {
 	deployCommands();
 });
 
-client.login(config.token);
+client.login(config.TOKEN);
 
 client.on(Events.InteractionCreate, async interaction => {
 	if (!interaction.isChatInputCommand()) return;
