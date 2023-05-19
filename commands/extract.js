@@ -54,9 +54,6 @@ module.exports = {
             let downloadPromises = []; // an array to hold all download promises
 
             messages.forEach(element => {
-
-                /* isCorrectAuthor first checks if you want to only download midjourney images, and then checks if the author is midjourney
-                If you don't want to limit it to Midjourney, set midjourneyOnly to false in config.json */
                 let isCorrectAuthor = !MIDJOURNEY_ONLY || (MIDJOURNEY_ONLY && element.author.id === MIDJOURNEY_ID);
                 let hasAttachments = element.attachments.size > 0;
                 let isUpscaledImage = UPSCALED_PATTERN.test(element.content) || !UPSCALED_ONLY;
@@ -64,6 +61,7 @@ module.exports = {
                 if (isCorrectAuthor && hasAttachments && isUpscaledImage) {
                     element.attachments.forEach(image => {
                         if (savedImages < numberOfImages) {
+                            console.log(savedImages, numberOfImages)
                             let link = image.url;
                             const imageDestination = path.join(DOWNLOAD_LOCATION, image.name);
 
@@ -77,20 +75,19 @@ module.exports = {
                                     filename
                                 }) => {
                                     console.log("Saved to ", filename);
-                                    savedImages++;
                                 })
                                 .catch(console.error)
+
                             );
+                            savedImages++;
                         }
                     });
                 }
             });
 
-            // Wait for all download promises to finish
             await Promise.all(downloadPromises);
             // Reply to user indicating images have been saved
             await interaction.editReply(`Saved ${savedImages} images to ${DOWNLOAD_LOCATION}`);
-
         } catch (error) {
             console.error("Error executing command", error);
         }
